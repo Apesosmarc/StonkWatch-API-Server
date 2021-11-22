@@ -18,6 +18,7 @@ app.listen(PORT, () => {
 const wakeUp = () => {
   setInterval(() => {
     Http2ServerRequest.get("https://floating-lowlands-36240.herokuapp.com");
+    console.log("Wake Up Heroku!");
   }, 300000);
 };
 
