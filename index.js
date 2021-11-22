@@ -1,4 +1,5 @@
 const express = require("express");
+const { Http2ServerRequest } = require("http2");
 const app = express();
 const PORT = process.env.PORT || 5000;
 
@@ -13,3 +14,11 @@ app.all("*", (req, res) => {
 app.listen(PORT, () => {
   console.log("server is listening on port 5000....");
 });
+
+const wakeUp = () => {
+  setInterval(() => {
+    Http2ServerRequest.get("https://floating-lowlands-36240.herokuapp.com");
+  }, 300000);
+};
+
+wakeUp();
