@@ -1,5 +1,17 @@
 const mongoose = require("mongoose");
 
+const WatchlistSchema = new mongoose.Schema({
+  name: {
+    type: String,
+  },
+  description: {
+    type: String,
+  },
+  stocks: {
+    type: Array,
+  },
+});
+
 // Schema Describes data type of document and it's data types
 const UserSchema = new mongoose.Schema({
   name: {
@@ -8,9 +20,10 @@ const UserSchema = new mongoose.Schema({
     required: [true, "must provide name"],
     trim: true,
   },
-  watchlists: {
-    type: Array,
-  },
+  watchlists: [WatchlistSchema],
 });
 
-module.exports = mongoose.model("User", UserSchema);
+module.exports = {
+  User: mongoose.model("User", UserSchema),
+  Watchlist: mongoose.model("Watchlist", WatchlistSchema),
+};

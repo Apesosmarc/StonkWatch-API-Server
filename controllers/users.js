@@ -1,46 +1,65 @@
-// import watchlsit model here
-const User = require("../models/Users");
+const { User } = require("../models/Users");
+//async wrapper middleware for refactor
+const asyncWrapper = require("../middlewares/asyncWrapper");
+//custom error class creator
+const { createCustomError } = require("../errors/custom-error");
 
-const getAllUsers = async (req, res) => {
+const getAllUsers = asyncWrapper(async (req, res) => {
   //empty obj in find = fetch all
-  try {
-    const users = await User.find({});
+  const users = await User.find({});
+  res.status(200).json({ users });
+});
 
-    res.status(200).json({ users });
-  } catch (error) {
-    res.status(500).json({ msg: error });
-  }
+const createUser = asyncWrapper(async (req, res) => {
+  const newUser = await User.create(req.body);
+  res.status(201).json({ newUser });
+});
 
-  console.log("request received");
-};
-
-const createUser = async (req, res) => {
-  try {
-    const newUser = await User.create(req.body);
-    res.status(201).json({ newUser });
-  } catch (error) {
-    res.status(500).json({ msg: error });
-  }
-};
-
-const getUser = async (req, res) => {
+const getUser = asyncWrapper(async (req, res) => {
   const { id: userId } = req.params;
-  try {
-    const user = await User.findOne({
-      _id: userId,
-    });
 
-    if (!user) {
-      return res.status(500).send("no user found");
-    }
-    res.status(200).json({ user });
-  } catch (error) {
-    res.status(500).send(`user:${userId} not found`);
+  const user = await User.findOne({
+    _id: userId,
+  });
+  if (!user) {
+    return next(createCustomError(`No user with id ${userId}`, 404));
   }
-};
+  res.status(200).json({ user });
+});
+
+const deleteUser = asyncWrapper(async (req, res, next) => {
+  const { id: userId } = req.params;
+
+  const user = await User.findOneAndDelete({ _id: userId });
+  if (!user) {
+    return next(createCustomError(`No user with id ${userId}`, 404));
+  }
+  res.status(200).json({ status: "deleted" });
+});
+
+const updateUser = asyncWrapper(async (req, res, next) => {
+  const { id: userId } = req.params;
+
+  // findOneUpdate(filter, desired update,options obj, new:true = returns item AFTER update )
+  const user = await User.findOneAndUpdate(
+    {
+      _id: userId,
+    },
+    req.body,
+    { new: true }
+  );
+
+  if (!user) {
+    return next(createCustomError(`No user with id ${userId}`, 404));
+  }
+
+  res.status(200).json({ user });
+});
 
 module.exports = {
   getAllUsers,
   createUser,
   getUser,
+  deleteUser,
+  updateUser,
 };
