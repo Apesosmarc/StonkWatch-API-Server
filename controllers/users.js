@@ -11,8 +11,9 @@ const getAllUsers = asyncWrapper(async (req, res) => {
 });
 
 const createUser = asyncWrapper(async (req, res) => {
-  const newUser = await User.create(req.body);
-  res.status(201).json({ newUser });
+  console.log(req.body);
+  // const newUser = await User.create(req.body);
+  // res.status(201).json({ newUser });
 });
 
 const getUser = asyncWrapper(async (req, res) => {
