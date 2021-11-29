@@ -6,14 +6,15 @@ const { createCustomError } = require("../errors/custom-error");
 
 const getAllUsers = asyncWrapper(async (req, res) => {
   //empty obj in find = fetch all
+  console.log("get");
   const users = await User.find({});
   res.status(200).json({ users });
 });
 
 const createUser = asyncWrapper(async (req, res) => {
   console.log(req.body);
-  // const newUser = await User.create(req.body);
-  // res.status(201).json({ newUser });
+  const newUser = await User.create(req.body);
+  res.status(201).json({ newUser });
 });
 
 const getUser = asyncWrapper(async (req, res) => {

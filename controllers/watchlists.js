@@ -68,22 +68,23 @@ const deleteWatchlist = asyncWrapper(async (req, res) => {
 });
 
 const createWatchlist = asyncWrapper(async (req, res) => {
+  const { userId, formValues } = req.body;
   const user = await User.findOne(
     {
-      _id: "61a26584d70f328df859aa3c",
+      _id: userId,
     },
     (err, result) => {
       if (!result || err) return err;
 
-      result.watchlists.push(req.body);
+      result.watchlists.push(req.formValues);
       result.save();
-    }
+    },
+    { new: true }
   ).clone();
 
   if (!user) {
     return next(createCustomError(`No user with id ${userId}`, 404));
   }
-
   res.status(201).json({ success: true });
 });
 
@@ -117,7 +118,7 @@ const addStockToWatchlist = asyncWrapper(async (req, res) => {
 
   res.status(201).json({
     success: true,
-    msg: `${stock} has been added to watchlist ${listId}`,
+    user,
   });
 });
 
@@ -155,7 +156,7 @@ const deleteStockFromWatchlist = asyncWrapper(async (req, res, next) => {
 
   res.status(201).json({
     success: true,
-    msg: `${stock} has been deleted from watchlist ${listId}`,
+    user,
   });
 });
 

@@ -17,8 +17,9 @@ const UserSchema = new mongoose.Schema({
   name: {
     type: String,
     // validators
-    required: [true, "must provide name"],
-    trim: true,
+  },
+  OAuthId: {
+    type: Number,
   },
   watchlists: [WatchlistSchema],
 });
