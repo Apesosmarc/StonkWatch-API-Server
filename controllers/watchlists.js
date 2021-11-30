@@ -16,20 +16,28 @@ const getAllWatchlists = asyncWrapper(async (req, res) => {
   res.status(200).json({ watchlists: user.watchlists });
 });
 
-const getOneWatchlist = asyncWrapper(async (req, res) => {
-  const { listId } = req.params.id;
+const getOneWatchlist = asyncWrapper(async (req, res, next) => {
+  const { listId } = req.params;
+  const userId = req.body.userId;
 
   if (!mongoose.Types.ObjectId.isValid(listId)) {
     return next(createCustomError(`No list found with Id: ${listId}`, 404));
   }
 
   const user = await User.findOne({
-    _id: "619fbcb7319361ecccf6de87",
+    _id: userId,
   });
 
-  const watchlist = user.watchlists.find(
-    (list) => (list._id = req.params.listId)
-  );
+  if (!user) {
+    return next(createCustomError(`No user with id: ${userId}`, 404));
+  }
+  const watchlist = user.watchlists.find((list) => (list._id = listId));
+
+  if (!watchlist) {
+    return next(
+      createCustomError(`No watchlist found with id: ${listId}`, 404)
+    );
+  }
 
   res.status(200).json({
     watchlist,

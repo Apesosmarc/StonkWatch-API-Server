@@ -10,11 +10,14 @@ require("dotenv").config();
 //custom error handle
 const notFound = require("./middlewares/not-found.js");
 const errorHandlerMiddleware = require("./middlewares/error-handler");
+// logger middleware
+const morgan = require("morgan");
 
 //middlewares
 //puts data in req.body
 app.use(express.json());
 //routes
+app.use(morgan("tiny"));
 app.use("/api/v1/users", users);
 app.use("/api/v1/watchlists", watchlists);
 app.use(notFound);

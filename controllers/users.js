@@ -1,12 +1,34 @@
 const { User } = require("../models/Users");
+const mongoose = require("mongoose");
 //async wrapper middleware for refactor
 const asyncWrapper = require("../middlewares/asyncWrapper");
 //custom error class creator
 const { createCustomError } = require("../errors/custom-error");
 
-const getAllUsers = asyncWrapper(async (req, res) => {
-  //empty obj in find = fetch all
-  console.log("get");
+const checkIfExists = (userId, next) => {
+  if (!mongoose.Types.ObjectId.isValid(userId)) {
+    return next(createCustomError(`No list found with Id: ${userId}`, 404));
+  }
+};
+
+const getAllUsers = asyncWrapper(async (req, res, next) => {
+  if (req.body.userId) {
+    const { userId } = req.body;
+    // checks if userId is a valid Mongoose ObjectID
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(200).json({
+        doesExist: false,
+        msg: "Not a valid ID token",
+      });
+    }
+
+    // checks if user exists, return boolean
+    const doesExist = await User.exists({
+      _id: req.body.userId,
+    });
+    return res.status(200).json({ doesExist, msg: "User Found" });
+  }
+
   const users = await User.find({});
   res.status(200).json({ users });
 });
