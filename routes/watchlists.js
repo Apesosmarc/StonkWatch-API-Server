@@ -10,12 +10,11 @@ const {
 } = require("../controllers/watchlists");
 
 router.route("/").get(getAllWatchlists).post(createWatchlist);
+router.route("/stock/:listId").delete(deleteStockFromWatchlist);
 router
   .route("/:listId")
   .get(getOneWatchlist)
   .delete(deleteWatchlist)
-  .patch(addStockToWatchlist);
-
-router.route("/stock/:listId").delete(deleteStockFromWatchlist);
+  .post(addStockToWatchlist);
 
 module.exports = router;

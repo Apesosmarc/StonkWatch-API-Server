@@ -44,8 +44,8 @@ const getOneWatchlist = asyncWrapper(async (req, res, next) => {
   });
 });
 
-const deleteWatchlist = asyncWrapper(async (req, res) => {
-  const { userId } = req.body;
+const deleteWatchlist = asyncWrapper(async (req, res, next) => {
+  const OAuthId = req.body.OAuthId;
   const listId = req.params.listId;
 
   if (!mongoose.Types.ObjectId.isValid(listId)) {
@@ -54,7 +54,7 @@ const deleteWatchlist = asyncWrapper(async (req, res) => {
 
   const user = await User.findOne(
     {
-      _id: "619fbcb7319361ecccf6de85",
+      OAuthId,
     },
     (err, result) => {
       if (!result) {
@@ -64,40 +64,45 @@ const deleteWatchlist = asyncWrapper(async (req, res) => {
       result.watchlists = result.watchlists.filter(
         (list) => list._id != req.params.listId
       );
+
       result.save();
     }
   ).clone();
 
   if (!user) {
-    return next(createCustomError(`No user with id ${userId}`, 404));
+    return next(createCustomError(`No user with id ${OAuthId}`, 404));
   }
 
-  res.status(201).json({ success: true, nbHits: user.watchlists.length - 1 });
+  res
+    .status(201)
+    .json({ success: true, nbHits: user.watchlists.length - 1, listId });
 });
 
-const createWatchlist = asyncWrapper(async (req, res) => {
-  const { userId, formValues } = req.body;
+const createWatchlist = asyncWrapper(async (req, res, next) => {
+  const { OAuthId, formValues } = req.body;
+
   const user = await User.findOne(
     {
-      _id: userId,
+      OAuthId,
     },
     (err, result) => {
       if (!result || err) return err;
 
-      result.watchlists.push(req.formValues);
+      result.watchlists.push(formValues);
       result.save();
     },
     { new: true }
   ).clone();
 
   if (!user) {
-    return next(createCustomError(`No user with id ${userId}`, 404));
+    return next(createCustomError(`No user with id ${OAuthId}`, 404));
   }
+
   res.status(201).json({ success: true });
 });
 
-const addStockToWatchlist = asyncWrapper(async (req, res) => {
-  const { userId, stock } = req.body;
+const addStockToWatchlist = asyncWrapper(async (req, res, next) => {
+  const { OAuthId, stock } = req.body;
   const listId = req.params.listId;
 
   if (!mongoose.Types.ObjectId.isValid(listId)) {
@@ -106,7 +111,7 @@ const addStockToWatchlist = asyncWrapper(async (req, res) => {
 
   const user = await User.findOne(
     {
-      _id: userId,
+      OAuthId,
     },
     (err, result) => {
       if (!result || err) return err;
@@ -114,24 +119,23 @@ const addStockToWatchlist = asyncWrapper(async (req, res) => {
       result.watchlists.forEach((list, index) => {
         if ((list._id = listId)) {
           result.watchlists[index].stocks.push(stock);
+          return;
         }
       });
+
       result.save();
+
+      return res.status(201).json({ result });
     }
   ).clone();
 
   if (!user) {
-    return next(createCustomError(`No user with id ${userId}`, 404));
+    return next(createCustomError(`No user with id ${OAuthId}`, 404));
   }
-
-  res.status(201).json({
-    success: true,
-    user,
-  });
 });
 
 const deleteStockFromWatchlist = asyncWrapper(async (req, res, next) => {
-  const { userId, stock } = req.body;
+  const { OAuthId, stock } = req.body;
   const listId = req.params.listId;
 
   if (!mongoose.Types.ObjectId.isValid(listId)) {
@@ -140,7 +144,7 @@ const deleteStockFromWatchlist = asyncWrapper(async (req, res, next) => {
 
   const user = await User.findOne(
     {
-      _id: userId,
+      OAuthId,
     },
     (err, result) => {
       if (err || !result) return;
@@ -155,17 +159,13 @@ const deleteStockFromWatchlist = asyncWrapper(async (req, res, next) => {
         }
       });
       result.save();
+      return res.status(201).json({ result });
     }
   ).clone();
 
   if (!user) {
-    return next(createCustomError(`No user with id ${userId}`, 404));
+    return next(createCustomError(`No user with id ${OAuthId}`, 404));
   }
-
-  res.status(201).json({
-    success: true,
-    user,
-  });
 });
 
 module.exports = {

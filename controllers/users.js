@@ -12,39 +12,38 @@ const checkIfExists = (userId, next) => {
 };
 
 const getAllUsers = asyncWrapper(async (req, res, next) => {
-  if (req.body.userId) {
-    const { userId } = req.body;
-    // checks if userId is a valid Mongoose ObjectID
-    if (!mongoose.Types.ObjectId.isValid(userId)) {
-      return res.status(200).json({
-        doesExist: false,
-        msg: "Not a valid ID token",
-      });
-    }
-
-    // checks if user exists, return boolean
-    const doesExist = await User.exists({
-      _id: req.body.userId,
-    });
-    return res.status(200).json({ doesExist, msg: "User Found" });
-  }
-
   const users = await User.find({});
   res.status(200).json({ users });
 });
 
 const createUser = asyncWrapper(async (req, res) => {
-  console.log(req.body);
-  const newUser = await User.create(req.body);
-  res.status(201).json({ newUser });
+  // const newUser = await User.create(req.body);
+  // res.status(201).json({ newUser });
+});
+
+const userLogin = asyncWrapper(async (req, res) => {
+  // first should see if user exists in DB
+  const existsInDB = await User.exists({
+    OAuthId: req.body.OAuthId,
+  });
+
+  if (existsInDB) {
+    return res.status(200).json({ existsInDB });
+  }
+
+  if (!existsInDB) {
+    await User.create(req.body);
+    return res.status(201).json({ createdStatus: "new" });
+  }
 });
 
 const getUser = asyncWrapper(async (req, res) => {
-  const { id: userId } = req.params;
+  const { id: OAuthId } = req.params;
 
   const user = await User.findOne({
-    _id: userId,
+    OAuthId,
   });
+
   if (!user) {
     return next(createCustomError(`No user with id ${userId}`, 404));
   }
@@ -86,4 +85,5 @@ module.exports = {
   getUser,
   deleteUser,
   updateUser,
+  userLogin,
 };

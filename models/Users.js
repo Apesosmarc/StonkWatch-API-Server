@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 const WatchlistSchema = new mongoose.Schema({
-  name: {
+  title: {
     type: String,
   },
   description: {
