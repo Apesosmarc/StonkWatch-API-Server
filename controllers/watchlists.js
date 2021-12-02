@@ -64,18 +64,15 @@ const deleteWatchlist = asyncWrapper(async (req, res, next) => {
       result.watchlists = result.watchlists.filter(
         (list) => list._id != req.params.listId
       );
-
       result.save();
+
+      res.status(201).json({ result });
     }
   ).clone();
 
   if (!user) {
     return next(createCustomError(`No user with id ${OAuthId}`, 404));
   }
-
-  res
-    .status(201)
-    .json({ success: true, nbHits: user.watchlists.length - 1, listId });
 });
 
 const createWatchlist = asyncWrapper(async (req, res, next) => {
@@ -89,7 +86,9 @@ const createWatchlist = asyncWrapper(async (req, res, next) => {
       if (!result || err) return err;
 
       result.watchlists.push(formValues);
+
       result.save();
+      return res.status(201).json({ result });
     },
     { new: true }
   ).clone();
@@ -97,14 +96,11 @@ const createWatchlist = asyncWrapper(async (req, res, next) => {
   if (!user) {
     return next(createCustomError(`No user with id ${OAuthId}`, 404));
   }
-
-  res.status(201).json({ success: true });
 });
 
 const addStockToWatchlist = asyncWrapper(async (req, res, next) => {
   const { OAuthId, stock } = req.body;
   const listId = req.params.listId;
-
   if (!mongoose.Types.ObjectId.isValid(listId)) {
     return next(createCustomError(`No list found with Id: ${listId}`, 404));
   }
@@ -117,14 +113,12 @@ const addStockToWatchlist = asyncWrapper(async (req, res, next) => {
       if (!result || err) return err;
 
       result.watchlists.forEach((list, index) => {
-        if ((list._id = listId)) {
-          result.watchlists[index].stocks.push(stock);
-          return;
+        if (list._id == listId) {
+          list.stocks.push(stock);
         }
       });
 
       result.save();
-
       return res.status(201).json({ result });
     }
   ).clone();

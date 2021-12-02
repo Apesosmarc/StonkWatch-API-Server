@@ -37,7 +37,7 @@ const userLogin = asyncWrapper(async (req, res) => {
   }
 });
 
-const getUser = asyncWrapper(async (req, res) => {
+const getUser = asyncWrapper(async (req, res, next) => {
   const { id: OAuthId } = req.params;
 
   const user = await User.findOne({
