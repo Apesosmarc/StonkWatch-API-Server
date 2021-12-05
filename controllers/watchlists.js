@@ -99,6 +99,7 @@ const createWatchlist = asyncWrapper(async (req, res, next) => {
 });
 
 const addStockToWatchlist = asyncWrapper(async (req, res, next) => {
+  console.log(req.body);
   const { OAuthId, stock } = req.body;
   const listId = req.params.listId;
   if (!mongoose.Types.ObjectId.isValid(listId)) {

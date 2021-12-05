@@ -16,11 +16,6 @@ const getAllUsers = asyncWrapper(async (req, res, next) => {
   res.status(200).json({ users });
 });
 
-const createUser = asyncWrapper(async (req, res) => {
-  // const newUser = await User.create(req.body);
-  // res.status(201).json({ newUser });
-});
-
 const userLogin = asyncWrapper(async (req, res) => {
   // first should see if user exists in DB
   const existsInDB = await User.exists({
@@ -81,7 +76,6 @@ const updateUser = asyncWrapper(async (req, res, next) => {
 
 module.exports = {
   getAllUsers,
-  createUser,
   getUser,
   deleteUser,
   updateUser,
