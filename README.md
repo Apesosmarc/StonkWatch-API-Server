@@ -6,7 +6,7 @@ This server communicates between the Stonkwatch client and mongoDB. It routes re
 I use custom middlewares such as error handlers classes to interject custom error message and status codes to specify error outcomes to the client.
 
 A custom asyncWrapper middleware accepts async request handlers as an argument to minimize async bindings in controller functions. I use Mongoose to create MongoDB schemas that expresses expected properties of my models to MongoDB, as well as nested schemas to store more complex
-info. This app logs incoming responses and requests and is deployed on Heroku.
+info. This app logs responses and requests and is deployed on Heroku.
 
 ## Technologies
 - NodeJS
