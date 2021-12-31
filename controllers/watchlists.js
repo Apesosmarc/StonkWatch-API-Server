@@ -1,5 +1,5 @@
 // import watchlsit model here
-const { User, Watchlist } = require("../models/Users");
+const { User } = require("../models/Users");
 //async wrapper middleware for refactor
 const asyncWrapper = require("../middlewares/asyncWrapper");
 //custom error class creator
@@ -16,10 +16,12 @@ const getAllWatchlists = asyncWrapper(async (req, res) => {
   res.status(200).json({ watchlists: user.watchlists });
 });
 
+// requests user obj then parses the correct list from list id
 const getOneWatchlist = asyncWrapper(async (req, res, next) => {
   const { listId } = req.params;
   const userId = req.body.userId;
 
+  // if its nto a valid mongoose id
   if (!mongoose.Types.ObjectId.isValid(listId)) {
     return next(createCustomError(`No list found with Id: ${listId}`, 404));
   }
@@ -31,6 +33,7 @@ const getOneWatchlist = asyncWrapper(async (req, res, next) => {
   if (!user) {
     return next(createCustomError(`No user with id: ${userId}`, 404));
   }
+
   const watchlist = user.watchlists.find((list) => (list._id = listId));
 
   if (!watchlist) {
@@ -44,6 +47,7 @@ const getOneWatchlist = asyncWrapper(async (req, res, next) => {
   });
 });
 
+// uses findOne callback to access desired data in database, saves and responds in callback
 const deleteWatchlist = asyncWrapper(async (req, res, next) => {
   const OAuthId = req.body.OAuthId;
   const listId = req.params.listId;
@@ -57,7 +61,7 @@ const deleteWatchlist = asyncWrapper(async (req, res, next) => {
       OAuthId,
     },
     (err, result) => {
-      if (!result) {
+      if (!result || err) {
         return err;
       }
 
@@ -102,7 +106,6 @@ const addStockToWatchlist = asyncWrapper(async (req, res, next) => {
   const { OAuthId, stock } = req.body;
   const listId = req.params.listId;
 
-  console.log(listId);
   if (!mongoose.Types.ObjectId.isValid(listId)) {
     return next(createCustomError(`No list found with Id: ${listId}`, 404));
   }
@@ -143,7 +146,7 @@ const deleteStockFromWatchlist = asyncWrapper(async (req, res, next) => {
       OAuthId,
     },
     (err, result) => {
-      if (err || !result) return;
+      if (err || !result) return err;
 
       result.watchlists.forEach((list, index) => {
         if ((list._id = listId)) {

@@ -10,6 +10,8 @@ const stocks = require("./routes/stocks");
 
 // DB
 const connectDB = require("./db/connect");
+
+//dotenv
 require("dotenv").config();
 
 //custom error handle

@@ -1,6 +1,7 @@
 //creates custom error class that accepts message and statusCode
 class CustomAPIError extends Error {
   constructor(message, statusCode) {
+    // calls parent class with message as arg
     super(message);
     this.statusCode = statusCode;
   }
