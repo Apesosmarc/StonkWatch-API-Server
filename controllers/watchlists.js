@@ -150,8 +150,9 @@ const deleteStockFromWatchlist = asyncWrapper(async (req, res, next) => {
 
       result.watchlists.forEach((list, index) => {
         if ((list._id = listId)) {
-          // assigns user stock array to filtered version of itself
+          // creates copy of stock array that is to be filtered; an attempt to make code readable
           const targetList = result.watchlists[index].stocks;
+
           result.watchlists[index].stocks = targetList.filter(
             (stockName) => stockName != stock
           );
