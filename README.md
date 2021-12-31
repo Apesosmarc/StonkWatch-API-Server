@@ -1,6 +1,8 @@
 # Stonkwatch Backend
 Backend Express API Server for Stonkwatch
 
+[FRONTEND](https://github.com/Apesosmarc/StonkWatch)
+
 ## Overview
 This server communicates between the Stonkwatch client and mongoDB. It routes requests to handler functions that can manipulate users, watchlists & stocks within MongoDB. 
 I use custom middlewares such as error handlers classes to interject custom error message and status codes to specify error outcomes to the client.
