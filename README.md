@@ -1,7 +1,7 @@
 # Stonkwatch API Server
 Node Express API server
 
-[Front End](https://github.com/Apesosmarc/StonkWatch)
+### [Front End Repo](https://github.com/Apesosmarc/StonkWatch)
 
 ## Overview
 This server communicates between the Stonkwatch client and mongoDB. It routes requests to handler functions that can manipulate users, watchlists & stocks within MongoDB and delivered requested data to the frontend. 
