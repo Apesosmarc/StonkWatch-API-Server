@@ -58,9 +58,8 @@ start();
 const wakeUp = () => {
   setInterval(() => {
     http.get("http://floating-lowlands-36240.herokuapp.com");
-    http.get("https://stonkwatch.herokuapp.com");
     console.log("Wake Up Heroku!");
-  }, 29 * 6000);
+  }, 174000);
 };
 
 wakeUp();
