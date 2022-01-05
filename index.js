@@ -60,7 +60,7 @@ const wakeUp = () => {
     http.get("http://floating-lowlands-36240.herokuapp.com");
     http.get("https://stonkwatch.herokuapp.com");
     console.log("Wake Up Heroku!");
-  }, 300000);
+  }, 29 * 6000);
 };
 
 wakeUp();
